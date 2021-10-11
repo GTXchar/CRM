@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nguyenxb.crm.workbench.dao.TranDao">
+
+    <select id="getTranById" resultType="Tran">
+        select * from tbl_tran where id=#{id}
+    </select>
+
+	<sql id="tran">
+        id,
+        owner          ,
+        money          ,
+        name           ,
+        expectedDate   ,
+        customerId     ,
+        stage          ,
+        type           ,
+        source         ,
+        activityId     ,
+        contactsId     ,
+        createBy       ,
+        createTime     ,
+        editBy         ,
+        editTime       ,
+        description    ,
+        contactSummary ,
+        nextContactTime
+
+    </sql>
+
+    <update id="update">
+        update tbl_tran
+        set
+        owner=#{owner},
+        money=#{money},
+        name=#{name},
+        expectedDate=#{expectedDate},
+        customerId=#{customerId},
+        stage=#{stage},
+        type=#{type},
+        source=#{source},
+        activityId=#{activityId},
+        contactsId=#{contactsId},
+        editBy=#{editBy},
+        editTime=#{editTime},
+        description=#{description},
+        contactSummary=#{contactSummary},
+        nextContactTime=#{nextContactTime}
+        where id=#{id}
+
+    </update>
+
+    <insert id="save">
+        insert into tbl_tran(<include refid="tran"/>)
+        values (
+            #{id},
+            #{owner},
+            #{money},
+            #{name},
+            #{expectedDate},
+            #{customerId},
+            #{stage},
+            #{type},
+            #{source},
+            #{activityId},
+            #{contactsId},
+            #{createBy},
+            #{createTime},
+            #{editBy},
+            #{editTime},
+            #{description},
+            #{contactSummary},
+            #{nextContactTime}
+        )
+    </insert>
+
+    <select id="detail" resultType="Tran">
+        select
+            tran.id,
+            user.name as owner          ,
+            tran.money          ,
+            tran.name           ,
+            tran.expectedDate   ,
+            cus.name as customerId     ,
+            tran.stage          ,
+            tran.type           ,
+            tran.source         ,
+            act.name as activityId     ,
+            con.fullname as contactsId     ,
+            tran.createBy       ,
+            tran.createTime     ,
+            tran.editBy         ,
+            tran.editTime       ,
+            tran.description    ,
+            tran.contactSummary ,
+            tran.nextContactTime
+
+        from tbl_tran tran
+        join tbl_user user
+        on tran.owner=user.id
+        join tbl_customer cus
+        on tran.customerId=cus.id
+        left join tbl_activity act
+        on tran.activityId=act.id
+        left join tbl_contacts con
+        on tran.contactsId=con.id
+
+        where tran.id=#{id}
+    </select>
+
+    <update id="changeStage">
+        update tbl_tran set stage=#{stage},editBy=#{editBy},editTime=#{editTime}
+        where id=#{id}
+    </update>
+
+    <select id="getTotal" resultType="int">
+        select count(*) from tbl_tran
+    </select>
+
+    <select id="getCharts" resultType="map">
+        select count(*) as value,stage as name
+        from tbl_tran
+        group by stage
+    </select>
+
+    <select id="getTotalByCondition" resultType="int">
+        SELECT COUNT(*)
+        FROM tbl_tran  tran JOIN tbl_user u ON tran.owner = u.id
+                            JOIN tbl_customer c ON tran.customerId = c.id
+                            JOIN tbl_contacts con ON tran.contactsId = con.id
+        <where>
+            <if test="owner != null and owner != ''">
+                u.name = #{owner}
+            </if>
+            <if test="name != null and name != ''">
+                and tran.name = #{name}
+            </if>
+            <if test="customerId != null and customerId != ''">
+                and c.name = #{customerId}
+            </if>
+            <if test="stage != null and stage != ''">
+                and tran.stage = #{stage}
+            </if>
+            <if test="type != null and type != ''">
+                and tran.type = #{type}
+            </if>
+            <if test="source != null and source != ''">
+                and tran.source = #{source}
+            </if>
+            <if test="contactsId != null and contactsId != ''">
+                and con.fullname = #{contactsId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getTranListByCondition" resultType="Tran">
+        select tran.id,
+        u.name as owner          ,
+        tran.money          ,
+        tran.name           ,
+        tran.expectedDate   ,
+        c.name as customerId     ,
+        tran.stage          ,
+        tran.type           ,
+        tran.source         ,
+        tran.activityId     ,
+        con.fullname as contactsId     ,
+        tran.createBy       ,
+        tran.createTime     ,
+        tran.editBy         ,
+        tran.editTime       ,
+        tran.description    ,
+        tran.contactSummary ,
+        tran.nextContactTime
+        FROM tbl_tran  tran JOIN tbl_user u ON tran.owner = u.id
+        JOIN tbl_customer c ON tran.customerId = c.id
+        JOIN tbl_contacts con ON tran.contactsId = con.id
+        <where>
+            <if test="owner != null and owner != ''">
+                u.name = #{owner}
+            </if>
+            <if test="name != null and name != ''">
+                and tran.name = #{name}
+            </if>
+            <if test="customerId != null and customerId != ''">
+                and c.name = #{customerId}
+            </if>
+            <if test="stage != null and stage != ''">
+                and tran.stage = #{stage}
+            </if>
+            <if test="type != null and type != ''">
+                and tran.type = #{type}
+            </if>
+            <if test="source != null and source != ''">
+                and tran.source = #{source}
+            </if>
+            <if test="contactsId != null and contactsId != ''">
+                and con.fullname = #{contactsId}
+            </if>
+        </where>
+        order by tran.createTime desc
+        limit #{skipCount},#{pageSize}
+
+
+    </select>
+
+    <delete id="deleteByArray">
+        delete from tbl_tran where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

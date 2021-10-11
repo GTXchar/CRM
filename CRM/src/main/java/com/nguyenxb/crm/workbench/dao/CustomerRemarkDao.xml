@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nguyenxb.crm.workbench.dao.CustomerRemarkDao">
+
+    <select id="getCountByCIds" resultType="int">
+        select count(*)
+        from tbl_customer_remark
+        where customerId in
+        <foreach collection="array" item="cid" open="(" close=")" separator=",">
+            #{cid}
+        </foreach>
+    </select>
+    <delete id="deleteByCIds">
+        delete from tbl_customer_remark
+        where customerId in
+        <foreach collection="array" item="cid" open="(" close=")" separator=",">
+            #{cid}
+        </foreach>
+    </delete>
+
+    <update id="updateRemark">
+        update tbl_customer_remark
+        set noteContent = #{noteContent},
+            editFlag = #{editFlag},
+            editTime = #{editTime},
+            editBy = #{editBy}
+        where id = #{id}
+    </update>
+
+
+    <delete id="deleteRemarkById">
+        delete from tbl_customer_remark
+        where id = #{id}
+    </delete>
+
+
+    <insert id="saveRemark">
+        insert into tbl_customer_remark(id,noteContent,createTime,createBy,editFlag,customerId)
+        values (
+                #{id},
+                #{noteContent},
+                #{createTime},
+                #{createBy},
+                #{editFlag},
+                #{customerId}
+                )
+    </insert>
+
+
+    <select id="getRemarkListById" resultType="ContactsRemark">
+            select id,noteContent,createTime,createBy,editTime,editBy,editFlag,customerId
+            from tbl_customer_remark
+            where customerId=#{customerId}
+    </select>
+
+    <sql id="customerRemark">
+        id,
+        noteContent,
+        createBy   ,
+        createTime ,
+        editFlag   ,
+        customerId
+    </sql>
+
+	<insert id="save">
+        insert into tbl_customer_remark(<include refid="customerRemark"/>)
+        values (
+        #{id},
+        #{noteContent},
+        #{createBy}   ,
+        #{createTime} ,
+        #{editFlag}   ,
+        #{customerId}
+        )
+    </insert>
+  	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
