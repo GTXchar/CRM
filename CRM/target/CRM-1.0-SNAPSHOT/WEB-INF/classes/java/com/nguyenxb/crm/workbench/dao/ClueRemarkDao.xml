@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nguyenxb.crm.workbench.dao.ClueRemarkDao">
+
+    <select id="getCountByCIds" resultType="int">
+        select count(*)
+        from tbl_clue_remark
+        where clueId in
+        <foreach collection="array" item="cid" open="(" close=")" separator=",">
+            #{cid}
+        </foreach>
+    </select>
+    <delete id="deleteByCIds">
+        delete from tbl_clue_remark
+        where clueId in
+        <foreach collection="array" item="cid" open="(" close=")" separator=",">
+            #{cid}
+        </foreach>
+    </delete>
+
+    <update id="updateRemark">
+        update tbl_clue_remark
+        set noteContent = #{noteContent},
+            editFlag = #{editFlag},
+            editTime = #{editTime},
+            editBy = #{editBy}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRemarkById">
+        delete from tbl_clue_remark
+        where id = #{id}
+    </delete>
+
+    <insert id="saveRemark">
+        insert into tbl_clue_remark(id,noteContent,createTime,createBy,editFlag,clueId)
+        values (
+                #{id},
+                #{noteContent},
+                #{createTime},
+                #{createBy},
+                #{editFlag},
+                #{clueId}
+                )
+    </insert>
+
+    <select id="getRemarkListById" resultType="ClueRemark">
+            select id,noteContent,createTime,createBy,editTime,editBy,editFlag,clueId
+            from tbl_clue_remark
+            where clueId=#{cid}
+        </select>
+
+	<sql id="clueRemark">
+        id,
+        noteContent,
+        createBy   ,
+        createTime ,
+        editBy     ,
+        editTime   ,
+        editFlag   ,
+        clueId
+    </sql>
+
+    <select id="getListByClueId" resultType="ClueRemark">
+        select <include refid="clueRemark"/>
+        from tbl_clue_remark
+        where clueId=#{clueId}
+    </select>
+
+    <delete id="delete">
+        delete from tbl_clue_remark where id=#{id}
+    </delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

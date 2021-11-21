@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    mapper 是当前文件的根标签，必须的。
+    sql映射文件（sql mapper）： 写sql语句的， mybatis会执行这些sql
+  1.指定约束文件
+     <!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+    mybatis-3-mapper.dtd是约束文件的名称， 扩展名是dtd的。
+  2.约束文件作用：  限制和检查在当前文件中出现的标签，属性必须符合mybatis的要求。
+    -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace：叫做命名空间，唯一值的， 可以是自定义的字符串。要求你使用dao接口的全限定名称。-->
+<mapper namespace="com.nguyenxb.crm.workbench.dao.ActivityRemarkDao">
+
+        <select id="getCountByAids" resultType="int">
+            select count(*)
+            from tbl_activity_remark
+            where activityId in
+            <foreach collection="array" item="aid" open="(" close=")" separator=",">
+                #{aid}
+            </foreach>
+        </select>
+
+        <delete id="deleteByAids" >
+            delete from tbl_activity_remark
+            where activityId in
+            <foreach collection="array" item="aid" open="(" close=")" separator=",">
+                #{aid}
+            </foreach>
+        </delete>
+
+        <delete id="delete">
+            delete from tbl_activity
+            where id in
+            <foreach collection="array" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </delete>
+
+        <select id="getRemarkListByAid" resultType="ActivityRemark">
+            select id,noteContent,createTime,createBy,editTime,editBy,editFlag,activityId
+            from tbl_activity_remark
+            where activityId = #{aid}
+        </select>
+
+    <delete id="deleteRemarkById">
+        delete from tbl_activity_remark
+        where id = #{id}
+    </delete>
+
+    <insert id="saveRemark">
+        insert into tbl_activity_remark(id,noteContent,createTime,createBy,editFlag,activityId)
+        values (
+                #{id},
+                #{noteContent},
+                #{createTime},
+                #{createBy},
+                #{editFlag},
+                #{activityId}
+                )
+    </insert>
+
+    <update id="updateRemark">
+        update tbl_activity_remark
+        set noteContent = #{noteContent},
+            editFlag = #{editFlag},
+            editTime = #{editTime},
+            editBy = #{editBy}
+        where id = #{id}
+    </update>
+</mapper>
+
